@@ -36,6 +36,8 @@ class NLayerDiscriminator(nn.Module):
         else:
             use_bias = norm_layer != nn.BatchNorm2d
 
+        self.final_layer_activations_ = None
+
         kw = 4
         padw = 1
         sequence = [nn.Conv2d(input_nc, ndf, kernel_size=kw, stride=2, padding=padw), nn.LeakyReLU(0.2, True)]
@@ -58,10 +60,23 @@ class NLayerDiscriminator(nn.Module):
             nn.LeakyReLU(0.2, True)
         ]
 
-        sequence += [
-            nn.Conv2d(ndf * nf_mult, 1, kernel_size=kw, stride=1, padding=padw)]  # output 1 channel prediction map
+        # sequence += [nn.Conv2d(ndf * nf_mult, 1, kernel_size=kw, stride=1, padding=padw)]  # output 1 channel prediction map    
         self.main = nn.Sequential(*sequence)
+        self.output = nn.Conv2d(ndf * nf_mult, 1, kernel_size=kw, stride=1, padding=padw)
 
     def forward(self, input):
         """Standard forward."""
-        return self.main(input)
+        x_ = self.main(input)
+        self.final_layer_activations_ = x_
+        return self.output(x_)
+
+
+    def get_final_layer_activations(self):
+
+        if self.final_layer_activations_ is None:
+            print("Uh-oh! Tried to grab freature layer activations before there where any!!")
+            exit(1)
+            
+        return self.final_layer_activations_
+        
+

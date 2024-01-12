@@ -29,6 +29,8 @@ class ImagePaths(Dataset):
         self.labels["file_path_"] = paths
         self._length = len(paths)
 
+        print("ImagePaths::__init__(): {:d}".format(len(paths)))
+
         if self.size is not None and self.size > 0:
             self.rescaler = albumentations.SmallestMaxSize(max_size = self.size)
             if not self.random_crop:

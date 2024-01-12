@@ -16,6 +16,7 @@ model:
       attn_resolutions: [16]
       dropout: 0.0
 
+    ckpt_path: "/work/pi_hzhang2_umass_edu/oyoungquist_umass_edu/taming-transformers/logs/2023-11-08T15-08-00_custom_vqgan/checkpoints/last.ckpt"
     lossconfig:
       target: taming.modules.losses.vqperceptual.VQLPIPSWithDiscriminator
       params:
@@ -33,11 +34,11 @@ data:
     train:
       target: taming.data.custom.CustomTrain
       params:
-        training_images_list_file: /work/pi_hzhang2_umass_edu/oyoungquist_umass_edu/datasets/V2X-Sim/positive_train_v2x.txt
+        training_images_list_file: /work/pi_hzhang2_umass_edu/oyoungquist_umass_edu/datasets/V2X-Sim/positive_vali_v2x.txt
         size: 256
     validation:
       target: taming.data.custom.CustomTest
       params:
-        test_images_list_file: /work/pi_hzhang2_umass_edu/oyoungquist_umass_edu/datasets/V2X-Sim/positive_vali_v2x.txt
+        test_images_list_file: /work/pi_hzhang2_umass_edu/oyoungquist_umass_edu/datasets/DeepAccident/negative_test_deep_acc_eval.txt
         size: 256
 

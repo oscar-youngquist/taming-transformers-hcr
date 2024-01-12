@@ -1,0 +1,6 @@
+vqgan_eval/
+images/
+__pycache__
+taming_transformers.egg-info/
+checkpoints/
+logs/

@@ -411,6 +411,8 @@ if __name__ == "__main__":
     seed_everything(opt.seed)
 
     try:
+        print(opt.base)
+        exit(0)
         # init and save configs
         configs = [OmegaConf.load(cfg) for cfg in opt.base]
         cli = OmegaConf.from_dotlist(unknown)
@@ -475,6 +477,7 @@ if __name__ == "__main__":
                 "filename": "{epoch:06}",
                 "verbose": True,
                 "save_last": True,
+                "period": 2,
             }
         }
         if hasattr(model, "monitor"):
@@ -521,6 +524,8 @@ if __name__ == "__main__":
         trainer_kwargs["callbacks"] = [instantiate_from_config(callbacks_cfg[k]) for k in callbacks_cfg]
 
         trainer = Trainer.from_argparse_args(trainer_opt, **trainer_kwargs)
+
+        print(trainer)
 
         # data
         data = instantiate_from_config(config.data)

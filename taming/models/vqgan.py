@@ -133,6 +133,25 @@ class VQModel(pl.LightningModule):
     def get_last_layer(self):
         return self.decoder.conv_out.weight
 
+
+    def get_discrim_features(self, x, xrec):
+        discrim_log = dict()
+        _ = self.loss.discriminator(x.contiguous())
+        input_feats = self.loss.discriminator.get_final_layer_activations()
+
+        _ = self.loss.discriminator(xrec.contiguous())
+        recon_feats = self.loss.discriminator.get_final_layer_activations()
+
+        feat_diff = torch.abs(input_feats - recon_feats)
+
+        discrim_log["dis_input"] = input_feats
+        discrim_log["dis_recon"] = recon_feats
+        discrim_log["dis_diff"] = feat_diff
+
+        return discrim_log
+
+
+
     def log_images(self, batch, **kwargs):
         log = dict()
         x = self.get_input(batch, self.image_key)
@@ -145,9 +164,16 @@ class VQModel(pl.LightningModule):
             xrec = self.to_rgb(xrec)
         log["inputs"] = x
         log["reconstructions"] = xrec
+        log["feature_diff"] = torch.abs(x - xrec)
+
+        discrim_log = self.get_discrim_features(x, xrec)
+
+        log.update(discrim_log)
+
         return log
 
     def to_rgb(self, x):
+        print("In to_rgb")
         assert self.image_key == "segmentation"
         if not hasattr(self, "colorize"):
             self.register_buffer("colorize", torch.randn(3, x.shape[1], 1, 1).to(x))
@@ -155,6 +181,9 @@ class VQModel(pl.LightningModule):
         x = 2.*(x-x.min())/(x.max()-x.min()) - 1.
         return x
 
+    # Need to load the Encoder, Decoder, and Discriminator
+    def load_checkpoint(self, checkpoint):
+        pass
 
 class VQSegmentationModel(VQModel):
     def __init__(self, n_labels, *args, **kwargs):
