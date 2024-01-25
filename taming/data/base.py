@@ -45,7 +45,10 @@ class ImagePaths(Dataset):
         return self._length
 
     def preprocess_image(self, image_path):
+        # print("ABout to load image")
         image = Image.open(image_path)
+        # print("Loded image")
+        # print(image.mode)
         if not image.mode == "RGB":
             image = image.convert("RGB")
         image = np.array(image).astype(np.uint8)
@@ -65,6 +68,7 @@ class NumpyPaths(ImagePaths):
     def preprocess_image(self, image_path):
         image = np.load(image_path).squeeze(0)  # 3 x 1024 x 1024
         image = np.transpose(image, (1,2,0))
+        # print("About to call fromarray in preprocess_image")
         image = Image.fromarray(image, mode="RGB")
         image = np.array(image).astype(np.uint8)
         image = self.preprocessor(image=image)["image"]

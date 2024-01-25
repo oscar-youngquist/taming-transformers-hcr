@@ -245,9 +245,7 @@ class ImageLogger(Callback):
             grid = (grid+1.0)/2.0 # -1,1 -> 0,1; c,h,w
 
             tag = f"{split}/{k}"
-            pl_module.logger.experiment.add_image(
-                tag, grid,
-                global_step=pl_module.global_step)
+            pl_module.logger.experiment.add_image(tag, grid, global_step=pl_module.global_step)
 
     @rank_zero_only
     def log_local(self, save_dir, split, images,
@@ -267,7 +265,7 @@ class ImageLogger(Callback):
                 batch_idx)
             path = os.path.join(root, filename)
             os.makedirs(os.path.split(path)[0], exist_ok=True)
-            Image.fromarray(grid).save(path)
+            Image.fromarray(grid, 'RGB').save(path)
 
     def log_img(self, pl_module, batch, batch_idx, split="train"):
         if (self.check_frequency(batch_idx) and  # batch_idx % self.batch_freq == 0
@@ -281,7 +279,12 @@ class ImageLogger(Callback):
                 pl_module.eval()
 
             with torch.no_grad():
-                images = pl_module.log_images(batch, split=split, pl_module=pl_module)
+                _images = pl_module.log_images(batch, split=split, pl_module=pl_module)
+        
+            # dumb hack around custom logging
+            images = {}
+            images["inputs"] = _images["inputs"]
+            images["reconstructions"] = _images["reconstructions"]
 
             for k in images:
                 N = min(images[k].shape[0], self.max_images)
@@ -411,8 +414,6 @@ if __name__ == "__main__":
     seed_everything(opt.seed)
 
     try:
-        print(opt.base)
-        exit(0)
         # init and save configs
         configs = [OmegaConf.load(cfg) for cfg in opt.base]
         cli = OmegaConf.from_dotlist(unknown)
