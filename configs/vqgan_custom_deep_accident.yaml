@@ -21,23 +21,23 @@ model:
       params:
         disc_conditional: False
         disc_in_channels: 3
-        disc_start: 2500
+        disc_start: 1000
         disc_weight: 0.8
         codebook_weight: 1.0
 
 data:
   target: main.DataModuleFromConfig
   params:
-    batch_size: 3
+    batch_size: 8
     num_workers: 8
     train:
       target: taming.data.custom.CustomTrain
       params:
-        training_images_list_file: /work/pi_hzhang2_umass_edu/oyoungquist_umass_edu/datasets/DeepAccident/positive_train_deep_acc_eval_vqgan.txt
+        training_images_list_file: /home/oyoungquist/Research/CPFP/processed_data/reprocessed_positive_train_deep_acc_eval_vqgan.txt
         size: 256
     validation:
       target: taming.data.custom.CustomTest
       params:
-        test_images_list_file: /work/pi_hzhang2_umass_edu/oyoungquist_umass_edu/datasets/DeepAccident/positive_vali_deep_acc_eval_vqgan.txt
+        test_images_list_file: /home/oyoungquist/Research/CPFP/processed_data/reprocessed_positive_vali_deep_acc_eval_vqgan.txt
         size: 256
 

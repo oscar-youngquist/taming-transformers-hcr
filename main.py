@@ -10,6 +10,7 @@ from pytorch_lightning import seed_everything
 from pytorch_lightning.trainer import Trainer
 from pytorch_lightning.callbacks import ModelCheckpoint, Callback, LearningRateMonitor
 from pytorch_lightning.utilities import rank_zero_only
+from pytorch_lightning.cli import LightningArgumentParser
 
 from taming.data.utils import custom_collate
 
@@ -33,7 +34,7 @@ def get_parser(**parser_kwargs):
         else:
             raise argparse.ArgumentTypeError("Boolean value expected.")
 
-    parser = argparse.ArgumentParser(**parser_kwargs)
+    parser = LightningArgumentParser(**parser_kwargs)
     parser.add_argument(
         "-n",
         "--name",
@@ -51,6 +52,15 @@ def get_parser(**parser_kwargs):
         default="",
         nargs="?",
         help="resume from logdir or checkpoint in logdir",
+    )
+    parser.add_argument(
+        "-g",
+        "--gpus",
+        type=str,
+        const=True,
+        default="0,",
+        nargs="?",
+        help="select the gpus to use during training",
     )
     parser.add_argument(
         "-b",
@@ -107,8 +117,7 @@ def get_parser(**parser_kwargs):
 
 
 def nondefault_trainer_args(opt):
-    parser = argparse.ArgumentParser()
-    parser = Trainer.add_argparse_args(parser)
+    parser = LightningArgumentParser()
     args = parser.parse_args([])
     return sorted(k for k in vars(args) if getattr(opt, k) != getattr(args, k))
 
@@ -370,9 +379,9 @@ if __name__ == "__main__":
     sys.path.append(os.getcwd())
 
     parser = get_parser()
-    parser = Trainer.add_argparse_args(parser)
+    # parser = Trainer.add_argparse_args(parser)
 
-    opt, unknown = parser.parse_known_args()
+    opt, unknown = parser.parse_args()
     if opt.name and opt.resume:
         raise ValueError(
             "-n/--name and -r/--resume cannot be specified both."
@@ -425,13 +434,22 @@ if __name__ == "__main__":
         trainer_config["distributed_backend"] = "ddp"
         for k in nondefault_trainer_args(opt):
             trainer_config[k] = getattr(opt, k)
-        if not "gpus" in trainer_config:
-            del trainer_config["distributed_backend"]
-            cpu = True
-        else:
-            gpuinfo = trainer_config["gpus"]
-            print(f"Running on GPUs {gpuinfo}")
-            cpu = False
+        # if not "gpus" in trainer_config:
+        #     del trainer_config["distributed_backend"]
+        #     cpu = True
+        # else:
+            # gpuinfo = trainer_config["gpus"]
+            # print(f"Running on GPUs {gpuinfo}")
+            # cpu = False
+            # DUMB HACK!
+            
+        trainer_config["gpus"] = "0,"
+        gpuinfo = trainer_config["gpus"]
+        print(f"Running on GPUs {gpuinfo}")
+        cpu = False
+    
+        
+        
         trainer_opt = argparse.Namespace(**trainer_config)
         lightning_config.trainer = trainer_config
 

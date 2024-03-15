@@ -45,6 +45,11 @@ class ImagePaths(Dataset):
         return self._length
 
     def preprocess_image(self, image_path):
+
+        # update image path based on current directory structure...
+        #    post-hoc hack after moving from Unity
+        #        could make better in the future
+
         # print("ABout to load image")
         image = Image.open(image_path)
         # print("Loded image")

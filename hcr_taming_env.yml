@@ -2,6 +2,7 @@ name: taming
 channels:
   - pytorch
   - conda-forge
+  - nvidia
   - defaults
 dependencies:
   - _libgcc_mutex=0.1=main
@@ -17,7 +18,6 @@ dependencies:
   - ca-certificates=2023.08.22=h06a4308_0
   - comm=0.1.4=pyhd8ed1ab_0
   - contourpy=1.0.5=py38hdb19cb5_0
-  - cudatoolkit=10.2.89=hfd86e86_1
   - cycler=0.11.0=pyhd3eb1b0_0
   - cyrus-sasl=2.1.28=h9c0eb46_1
   - dbus=1.13.18=hb2f20db_0
@@ -112,7 +112,7 @@ dependencies:
   - python-dateutil=2.8.2=pyhd8ed1ab_0
   - python-tzdata=2023.3=pyhd3eb1b0_0
   - python_abi=3.8=2_cp38
-  - pytorch=1.7.0=py3.8_cuda10.2.89_cudnn7.6.5_0
+  - pytorch-cuda=11.8
   - pytz=2023.3.post1=py38h06a4308_0
   - pyzmq=25.1.0=py38h6a678d5_0
   - qt-main=5.15.2=h110a718_10
@@ -125,7 +125,6 @@ dependencies:
   - stack_data=0.6.2=pyhd8ed1ab_0
   - tk=8.6.12=h1ccaba5_0
   - tomli=2.0.1=py38h06a4308_0
-  - torchvision=0.8.1=py38_cu102
   - traitlets=5.13.0=pyhd8ed1ab_0
   - typing_extensions=4.7.1=py38h06a4308_0
   - wcwidth=0.2.9=pyhd8ed1ab_0
